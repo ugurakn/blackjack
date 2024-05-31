@@ -29,8 +29,8 @@ func main() {
 			d = deal(d, dHand)
 		}
 
-		fmt.Println("dealer's hand:", dHand.cards)
-		fmt.Println("player's hand:", players[0].cards)
+		fmt.Printf("player's hand:%v, value:%v\n", players[0].cards, players[0].calc())
+		fmt.Printf("dealer's hand:%v, value:%v\n", dHand.cards, dHand.calc())
 		fmt.Println(len(d), d[0])
 
 		// finish game

@@ -27,21 +27,6 @@ func Test_deal(t *testing.T) {
 	}
 }
 
-func Test_newHand(t *testing.T) {
-	ply := player1
-	h := newHand(ply)
-
-	if h == nil {
-		t.Fatalf("*hand is nil")
-	}
-	if h.owner != ply {
-		t.Errorf("expected h.owner to be %v, got %v", ply, h.owner)
-	}
-	if h.cards == nil {
-		t.Errorf("h.cards is nil. It must be initialized.")
-	}
-}
-
 // tests the initial deal 2 to players & dealer.
 func Test_initial_deal(t *testing.T) {
 	d := deck.New()

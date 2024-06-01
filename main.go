@@ -14,13 +14,11 @@ const initialDealSize = 2
 func main() {
 	d := deck.New(deck.Shuffle)
 
-	// this is for only a single player
-	p1Hand := newHand(player1)
 	dHand := newHand(dealer)
 
 	// this should be named smth like 'hands'
 	// but this is fine for single-player
-	players := []*hand{p1Hand}
+	players := []*hand{newHand(player1), newHand(player2)}
 
 	// initial deal phase
 	for i := 0; i < initialDealSize; i++ {
@@ -32,6 +30,7 @@ func main() {
 
 	// each player plays until they stand or bust
 	for _, p := range players {
+		fmt.Println()
 		fmt.Println(dHand)
 
 		var done bool
@@ -39,7 +38,7 @@ func main() {
 			fmt.Println(p)
 
 			// prompt player to hit or stand
-			fmt.Print("(h)it or (s)tand: ")
+			fmt.Printf("(%v) (h)it or (s)tand: ", p.owner)
 			var in string
 			fmt.Scanf("%s\n", &in)
 			switch strings.ToLower(in) {
@@ -65,22 +64,26 @@ func main() {
 		}
 	}
 	fmt.Println("All players played. Dealer's turn...")
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Millisecond * 500)
 
 	// show dealer's hidden card and total value
 	fmt.Printf("dealer's face-down card: '%v'\n", dHand.cards[0])
 	fmt.Printf("dealer's cards value: %v\n", dHand.value())
 
 	// determine and announce winner
+	// possible cases: lost, lost (bust), push (i.e. draw), won, won (blackjack)
+
 	dVal := dHand.value()
 	for _, p := range players {
 		val := p.value()
-		if p.bust || val < dVal {
-			fmt.Println(p.owner, "lost!")
+		if p.bust {
+			fmt.Println(p.owner, "LOST! (bust)")
+		} else if val < dVal {
+			fmt.Println(p.owner, "LOST!")
 		} else if val > dVal {
-			fmt.Println(p.owner, "won!")
+			fmt.Println(p.owner, "WON!")
 		} else {
-			fmt.Println(p.owner, "ties! (push)")
+			fmt.Println(p.owner, "PUSH!")
 		}
 	}
 }

@@ -74,6 +74,11 @@ func Test_calc(t *testing.T) {
 		{Suit: deck.Diamond, Rank: deck.Ace},
 		{Suit: deck.Heart, Rank: deck.Ace},
 	}
+	h9 := newHand(player1)
+	h9.cards = []deck.Card{
+		{Suit: deck.Club, Rank: deck.Two},
+		{Suit: deck.Spade, Rank: deck.Six},
+	}
 
 	testCases := []struct {
 		h      *hand
@@ -87,6 +92,7 @@ func Test_calc(t *testing.T) {
 		{h: h6, expect: 20},
 		{h: h7, expect: 12},
 		{h: h8, expect: 14},
+		{h: h9, expect: 8},
 	}
 
 	for i, tc := range testCases {

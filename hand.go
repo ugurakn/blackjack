@@ -52,7 +52,7 @@ func (h *hand) value() int {
 	// add 1 per ace to total
 	total += aces
 	// turn one ace to 11 if total wouldn't bust
-	if total <= 11 {
+	if total <= 11 && aces > 0 {
 		total += 10
 	}
 	return total

@@ -5,17 +5,17 @@ import "github.com/ugurakn/deck"
 type hand struct {
 	owner player
 	cards []deck.Card
-	val   int
+	bust  bool
 }
 
 // newHand creates and returns
 // a new *hand with owner o
 func newHand(o player) *hand {
-	return &hand{owner: o, cards: make([]deck.Card, 0), val: 0}
+	return &hand{owner: o, cards: make([]deck.Card, 0)}
 }
 
 // calc calculates the current value of cards in a hand.
-func (h *hand) calc() int {
+func (h *hand) value() int {
 	var total int
 	var aces int
 	for _, c := range h.cards {
@@ -33,6 +33,5 @@ func (h *hand) calc() int {
 	if total <= 11 {
 		total += 10
 	}
-	h.val = total
 	return total
 }

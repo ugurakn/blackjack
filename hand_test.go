@@ -91,7 +91,7 @@ func Test_calc(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("h%v", i+1), func(t *testing.T) {
-			if val := tc.h.calc(); val != tc.expect {
+			if val := tc.h.value(); val != tc.expect {
 				t.Errorf("expected hand val to be %v, got %v", tc.expect, val)
 			}
 		})

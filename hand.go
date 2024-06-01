@@ -1,6 +1,10 @@
 package main
 
-import "github.com/ugurakn/deck"
+import (
+	"fmt"
+
+	"github.com/ugurakn/deck"
+)
 
 type hand struct {
 	owner player
@@ -8,10 +12,28 @@ type hand struct {
 	bust  bool
 }
 
-// newHand creates and returns
-// a new *hand with owner o
-func newHand(o player) *hand {
-	return &hand{owner: o, cards: make([]deck.Card, 0)}
+func (h *hand) String() string {
+	// example:
+	// Player's Hand: 'Ace of Spades', 'Five of Diamonds' -> value: 16
+	s := fmt.Sprintf("%s's hand: ", h.owner)
+
+	var hiddenSlice int
+	if h.owner == dealer {
+		s += "[face-down], "
+		hiddenSlice = 1
+	}
+
+	cards := h.cards[hiddenSlice:]
+	for i, c := range cards {
+		s += fmt.Sprintf("'%s'", c)
+		if i != len(cards)-1 {
+			s += ", "
+		}
+	}
+	if h.owner != dealer {
+		s += fmt.Sprintf(" -> value: %v", h.value())
+	}
+	return s
 }
 
 // calc calculates the current value of cards in a hand.
@@ -34,4 +56,10 @@ func (h *hand) value() int {
 		total += 10
 	}
 	return total
+}
+
+// newHand creates and returns
+// a new *hand with owner o
+func newHand(o player) *hand {
+	return &hand{owner: o, cards: make([]deck.Card, 0)}
 }

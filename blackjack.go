@@ -91,15 +91,19 @@ func playTurn(sh *shoe, p *hand) {
 		var in string
 		fmt.Scanf("%s\n", &in)
 		switch strings.ToLower(in) {
-		case "h":
+		case "h": // hit
 			bust := hit(sh, p)
-			fmt.Printf("(%v) HIT: %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], p.value())
+			val := p.value()
+			fmt.Printf("(%v) HIT: %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], val)
+			if val == 21 { // auto-stand on 21
+				done = true
+			}
 			if bust {
 				done = true
 				fmt.Printf("(%v) BUST!\n", p.owner)
 			}
 
-		case "s":
+		case "s": // stand
 			fmt.Printf("(%v) STAND\n", p.owner)
 			done = true
 

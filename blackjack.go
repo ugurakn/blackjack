@@ -47,13 +47,14 @@ func deal(d []deck.Card, h *hand) []deck.Card {
 	return d
 }
 
-// Draw draws the top card from d
-// and returns the modified d and the card.
-// func Draw(d []deck.Card) ([]deck.Card, deck.Card) {
-// 	if len(d) == 0 {
-// 		panic("Draw: can't draw from empty deck.")
-// 	}
-// 	c := d[0]
-// 	d = d[1:]
-// 	return d, c
-// }
+// checkBJ is called for each player's and dealer's
+// hand to see whether it is a natural blackjack.
+// If it is, sets h.bjack to true
+// and returns true.
+func checkBJ(h *hand) bool {
+	if h.value() == 21 {
+		h.bjack = true
+		return true
+	}
+	return false
+}

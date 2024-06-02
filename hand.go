@@ -6,10 +6,24 @@ import (
 	"github.com/ugurakn/deck"
 )
 
+type winState int
+
+// possible cases: undecided, lost, lost (bust), push (i.e. draw), won, won (blackjack)
+const (
+	undecided winState = iota
+	lost
+	bust
+	push
+	win
+	winbj
+)
+
 type hand struct {
 	owner player
 	cards []deck.Card
-	bust  bool
+	// the hand is a natural blackjack
+	bjack bool
+	winState
 }
 
 func (h *hand) String() string {
@@ -56,6 +70,32 @@ func (h *hand) value() int {
 		total += 10
 	}
 	return total
+}
+
+// set winState for h by comparison to
+// dealer's hand dh
+// this method assumes blackjack related
+// win states have already been handled
+func (h *hand) setWinState(dh *hand) {
+	val := h.value()
+	dhVal := dh.value()
+
+	if val > 21 {
+		h.winState = bust
+		return
+	}
+	if val < dhVal {
+		h.winState = lost
+		return
+	}
+	if val > dhVal {
+		h.winState = win
+		return
+	}
+	if val == dhVal {
+		h.winState = push
+		return
+	}
 }
 
 // newHand creates and returns

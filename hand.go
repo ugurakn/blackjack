@@ -21,14 +21,12 @@ const (
 type hand struct {
 	owner player
 	cards []deck.Card
-	// the hand is a natural blackjack
+	// if the hand is a natural blackjack
 	bjack bool
 	winState
 }
 
 func (h *hand) String() string {
-	// example:
-	// Player's Hand: 'Ace of Spades', 'Five of Diamonds' -> value: 16
 	s := fmt.Sprintf("(%v) hand: ", h.owner)
 
 	var hiddenSlice int
@@ -74,9 +72,21 @@ func (h *hand) value() int {
 
 // set winState for h by comparison to
 // dealer's hand dh
-// this method assumes blackjack related
-// win states have already been handled
 func (h *hand) setWinState(dh *hand) {
+	if dh.bjack {
+		if h.bjack {
+			h.winState = push
+		} else {
+			h.winState = lost
+		}
+		return
+	}
+
+	if h.bjack {
+		h.winState = winbj
+		return
+	}
+
 	val := h.value()
 	dhVal := dh.value()
 
@@ -86,15 +96,10 @@ func (h *hand) setWinState(dh *hand) {
 	}
 	if val < dhVal {
 		h.winState = lost
-		return
-	}
-	if val > dhVal {
+	} else if val > dhVal {
 		h.winState = win
-		return
-	}
-	if val == dhVal {
+	} else {
 		h.winState = push
-		return
 	}
 }
 

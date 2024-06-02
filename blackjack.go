@@ -107,6 +107,6 @@ func playTurn(sh *shoe, p *hand) {
 			fmt.Println("unknown input:", in)
 			os.Exit(1)
 		}
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Millisecond * 500)
 	}
 }

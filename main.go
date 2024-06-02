@@ -17,7 +17,7 @@ func main() {
 	dHand := newHand(dealer)
 
 	// this should be named smth like 'hands'
-	// but this is fine for single-player
+	// but this is fine for single-hand per player
 	players := []*hand{newHand(player1), newHand(player2)}
 
 	// initial deal phase
@@ -28,60 +28,54 @@ func main() {
 		deal(sh, dHand)
 	}
 
-	// check natural blackjacks, skip game loop if any exists
-	var blackjack bool
-	blackjack = checkBJ(dHand)
-	if blackjack {
+	// show dealt cards for each player
+	fmt.Println("All cards dealt...")
+	fmt.Println(dHand)
+	for _, p := range players {
+		fmt.Println(p)
+	}
+	time.Sleep(1 * time.Second)
+
+	// check natural blackjacks
+	// if dealer has one, skip players turn
+	dealerbjack := checkBJ(dHand)
+	if dealerbjack {
 		fmt.Println("dealer has a blackjack!")
 	}
+
 	for _, p := range players {
-		pBj := checkBJ(p)
-		if pBj {
-			blackjack = true
+		if checkBJ(p) {
 			fmt.Println(p.owner, "has a blackjack!")
 		}
 	}
 
 	// each player plays until they stand or bust
 	for _, p := range players {
-		if blackjack {
+		// skip players turn if dealer has a bjack
+		if dealerbjack {
 			break
+		}
+
+		// skip this player's turn if he has a bjack
+		if p.bjack {
+			continue
 		}
 
 		fmt.Println()
 		fmt.Println(dHand)
-
 		playTurn(sh, p)
 	}
-	fmt.Println("All players played. Dealer's turn...")
+	fmt.Println("Game ended...")
 	time.Sleep(time.Millisecond * 500)
 
 	// show dealer's hidden card and total value
 	fmt.Printf("dealer's face-down card: '%v'\n", dHand.cards[0])
 	fmt.Printf("dealer's cards value: %v\n", dHand.value())
+	time.Sleep(time.Millisecond * 750)
 
 	// determine and announce winner
-	if blackjack {
-		if dHand.bjack {
-			for _, p := range players {
-				if p.bjack {
-					p.winState = push
-				}
-				p.winState = lost
-			}
-		} else {
-			for _, p := range players {
-				if p.bjack {
-					p.winState = winbj
-				}
-			}
-		}
-	}
-
 	for _, p := range players {
-		if p.winState == undecided {
-			p.setWinState(dHand)
-		}
+		p.setWinState(dHand)
 	}
 
 	// display winState messages

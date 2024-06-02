@@ -1,6 +1,13 @@
 package main
 
-import "github.com/ugurakn/deck"
+import (
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/ugurakn/deck"
+)
 
 // type rValue struct {
 // 	r   deck.Rank
@@ -71,4 +78,35 @@ func checkBJ(h *hand) bool {
 		return true
 	}
 	return false
+}
+
+// playTurn will let a player play his turn.
+func playTurn(sh *shoe, p *hand) {
+	var done bool
+	for !done {
+		fmt.Println(p)
+
+		// prompt player to hit or stand
+		fmt.Printf("(%v) (h)it or (s)tand: ", p.owner)
+		var in string
+		fmt.Scanf("%s\n", &in)
+		switch strings.ToLower(in) {
+		case "h":
+			bust := hit(sh, p)
+			fmt.Printf("(%v) HIT: %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], p.value())
+			if bust {
+				done = true
+				fmt.Printf("(%v) BUST!\n", p.owner)
+			}
+
+		case "s":
+			fmt.Printf("(%v) STAND\n", p.owner)
+			done = true
+
+		default:
+			fmt.Println("unknown input:", in)
+			os.Exit(1)
+		}
+		time.Sleep(time.Second * 1)
+	}
 }

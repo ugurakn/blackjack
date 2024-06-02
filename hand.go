@@ -29,7 +29,7 @@ type hand struct {
 func (h *hand) String() string {
 	// example:
 	// Player's Hand: 'Ace of Spades', 'Five of Diamonds' -> value: 16
-	s := fmt.Sprintf("%s's hand: ", h.owner)
+	s := fmt.Sprintf("(%v) hand: ", h.owner)
 
 	var hiddenSlice int
 	if h.owner == dealer {

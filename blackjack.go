@@ -23,6 +23,13 @@ import "github.com/ugurakn/deck"
 // 	faceK = rValue{deck.K, 10}
 // )
 
+// shoe represents the game deck
+// from which cards are dealt
+type shoe struct {
+	cards    []deck.Card
+	initSize int
+}
+
 type player int
 
 const (
@@ -37,14 +44,21 @@ const (
 // and appends it to h.cards.
 // Returns modified d.
 // Panics if len(d) == 0
-func deal(d []deck.Card, h *hand) []deck.Card {
-	if len(d) == 0 {
+func deal(sh *shoe, h *hand) {
+	if len(sh.cards) == 0 {
 		panic("can't deal from empty deck")
 	}
 
-	h.cards = append(h.cards, d[0])
-	d = d[1:]
-	return d
+	h.cards = append(h.cards, sh.cards[0])
+	sh.cards = sh.cards[1:]
+}
+
+// hit is a player action that adds a new card
+// to a hand (using deal).
+// returns if the player busted.
+func hit(sh *shoe, h *hand) bool {
+	deal(sh, h)
+	return h.value() > 21
 }
 
 // checkBJ is called for each player's and dealer's

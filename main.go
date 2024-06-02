@@ -12,7 +12,9 @@ import (
 const initialDealSize = 2
 
 func main() {
-	d := deck.New(deck.Shuffle)
+	sh := new(shoe)
+	sh.cards = deck.New(deck.Shuffle)
+	sh.initSize = len(sh.cards)
 
 	dHand := newHand(dealer)
 
@@ -23,9 +25,9 @@ func main() {
 	// initial deal phase
 	for i := 0; i < initialDealSize; i++ {
 		for _, p := range players {
-			d = deal(d, p)
+			deal(sh, p)
 		}
-		d = deal(d, dHand)
+		deal(sh, dHand)
 	}
 
 	// check natural blackjacks, skip game loop if any exists
@@ -61,11 +63,10 @@ func main() {
 			fmt.Scanf("%s\n", &in)
 			switch strings.ToLower(in) {
 			case "h":
-				d = deal(d, p)
-				fmt.Printf("%v HIT: got %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], p.value())
+				bust := hit(sh, p)
+				fmt.Printf("%v HIT: %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], p.value())
 				time.Sleep(time.Second * 1)
-				// check bust
-				if val := p.value(); val > 21 {
+				if bust {
 					done = true
 					fmt.Printf("%v BUST!\n", p.owner)
 				}

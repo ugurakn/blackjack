@@ -14,11 +14,11 @@ func main() {
 	sh.cards = deck.New(deck.Shuffle)
 	sh.initSize = len(sh.cards)
 
-	dHand := newHand(dealer)
+	dHand := newHand(dealer, false)
 
 	// this should be named smth like 'hands'
 	// but this is fine for single-hand per player
-	players := []*hand{newHand(player1), newHand(player2)}
+	players := []*hand{newHand(player1, true), newHand(player2, true)}
 
 	// initial deal phase
 	for i := 0; i < initialDealSize; i++ {

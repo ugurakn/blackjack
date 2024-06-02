@@ -23,6 +23,8 @@ type hand struct {
 	cards []deck.Card
 	// if the hand is a natural blackjack
 	bjack bool
+	// if the player is human or AI
+	human bool
 	winState
 }
 
@@ -105,6 +107,6 @@ func (h *hand) setWinState(dh *hand) {
 
 // newHand creates and returns
 // a new *hand with owner o
-func newHand(o player) *hand {
-	return &hand{owner: o, cards: make([]deck.Card, 0)}
+func newHand(o player, human bool) *hand {
+	return &hand{owner: o, cards: make([]deck.Card, 0), human: human}
 }

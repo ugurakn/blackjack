@@ -86,10 +86,14 @@ func playTurn(sh *shoe, p *hand) {
 	for !done {
 		fmt.Println(p)
 
-		// prompt player to hit or stand
+		// get player input
 		fmt.Printf("(%v) (h)it or (s)tand: ", p.owner)
 		var in string
-		fmt.Scanf("%s\n", &in)
+		if p.human {
+			in = getInput()
+		} else {
+			in = getAIInput()
+		}
 		switch strings.ToLower(in) {
 		case "h": // hit
 			bust := hit(sh, p)
@@ -113,4 +117,18 @@ func playTurn(sh *shoe, p *hand) {
 		}
 		time.Sleep(time.Millisecond * 500)
 	}
+}
+
+// Get input from human player.
+// Valid choices: h, s
+func getInput() string {
+	var in string
+	fmt.Scanf("%s\n", &in)
+	return in
+}
+
+// To be implemented
+func getAIInput() string {
+	// TODO
+	return "AI"
 }

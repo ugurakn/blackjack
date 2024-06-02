@@ -34,8 +34,8 @@ func Test_initial_deal(t *testing.T) {
 	sh.cards = deck.New()
 	sh.initSize = len(sh.cards)
 
-	dh := newHand(dealer)
-	players := []*hand{newHand(player1), newHand(player2)}
+	dh := newHand(dealer, true)
+	players := []*hand{newHand(player1, true), newHand(player2, true)}
 
 	for i := 0; i < 2; i++ {
 		for _, p := range players {

@@ -19,12 +19,9 @@ const (
 )
 
 type hand struct {
-	owner player
+	owner *player
 	cards []deck.Card
-	// if the hand is a natural blackjack
 	bjack bool
-	// if the player is human or AI
-	human bool
 	winState
 }
 
@@ -32,7 +29,7 @@ func (h *hand) String() string {
 	s := fmt.Sprintf("(%v) hand: ", h.owner)
 
 	var hiddenSlice int
-	if h.owner == dealer {
+	if h.owner.isDealer {
 		s += "[face-down], "
 		hiddenSlice = 1
 	}
@@ -44,7 +41,7 @@ func (h *hand) String() string {
 			s += ", "
 		}
 	}
-	if h.owner != dealer {
+	if !h.owner.isDealer {
 		s += fmt.Sprintf(" -> value: %v", h.value())
 	}
 	return s
@@ -106,7 +103,7 @@ func (h *hand) setWinState(dh *hand) {
 }
 
 // newHand creates and returns
-// a new *hand with owner o
-func newHand(o player, human bool) *hand {
-	return &hand{owner: o, cards: make([]deck.Card, 0), human: human}
+// a new *hand of player p
+func newHand(p *player) *hand {
+	return &hand{owner: p, cards: make([]deck.Card, 0)}
 }

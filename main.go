@@ -8,21 +8,25 @@ import (
 )
 
 const initialDealSize = 2
+const initPurseSize = 1000
 
 func main() {
 	sh := new(shoe)
 	sh.cards = deck.New(deck.Shuffle)
 	sh.initSize = len(sh.cards)
 
-	dHand := newHand(dealer, false)
+	// create dealer & players
+	p1 := &player{name: "player1", purse: initPurseSize, isDealer: false, isHuman: true}
+	p2 := &player{name: "player2", purse: initPurseSize, isDealer: false, isHuman: true}
 
-	// this should be named smth like 'hands'
-	// but this is fine for single-hand per player
-	players := []*hand{newHand(player1, true), newHand(player2, true)}
+	dHand := newHand(newDealer())
+
+	// represents players' hands
+	hands := []*hand{newHand(p1), newHand(p2)}
 
 	// initial deal phase
 	for i := 0; i < initialDealSize; i++ {
-		for _, p := range players {
+		for _, p := range hands {
 			deal(sh, p)
 		}
 		deal(sh, dHand)
@@ -31,39 +35,39 @@ func main() {
 	// show dealt cards for each player
 	fmt.Println("All cards dealt...")
 	fmt.Println(dHand)
-	for _, p := range players {
-		fmt.Println(p)
+	for _, h := range hands {
+		fmt.Println(h)
 	}
 	time.Sleep(1 * time.Second)
 
 	// check natural blackjacks
-	// if dealer has one, skip players turn
+	// if dealer has one, skip hands turn
 	dealerbjack := checkBJ(dHand)
 	if dealerbjack {
 		fmt.Println("dealer has a blackjack!")
 	}
 
-	for _, p := range players {
-		if checkBJ(p) {
-			fmt.Println(p.owner, "has a blackjack!")
+	for _, h := range hands {
+		if checkBJ(h) {
+			fmt.Println(h.owner, "has a blackjack!")
 		}
 	}
 
 	// each player plays until they stand or bust
-	for _, p := range players {
-		// skip players turn if dealer has a bjack
+	for _, h := range hands {
+		// skip all players' turns if dealer has a bjack
 		if dealerbjack {
 			break
 		}
 
-		// skip this player's turn if he has a bjack
-		if p.bjack {
+		// skip this hand's turn if he has a bjack
+		if h.bjack {
 			continue
 		}
 
 		fmt.Println()
 		fmt.Println(dHand)
-		playTurn(sh, p)
+		playTurn(sh, h)
 	}
 	fmt.Println("Game ended...")
 	time.Sleep(time.Millisecond * 500)
@@ -74,23 +78,23 @@ func main() {
 	time.Sleep(time.Millisecond * 750)
 
 	// determine and announce winner
-	for _, p := range players {
-		p.setWinState(dHand)
+	for _, h := range hands {
+		h.setWinState(dHand)
 	}
 
 	// display winState messages
-	for _, p := range players {
-		switch p.winState {
+	for _, h := range hands {
+		switch h.winState {
 		case lost:
-			fmt.Println(p.owner, "LOST!")
+			fmt.Println(h.owner, "LOST!")
 		case bust:
-			fmt.Println(p.owner, "LOST! (bust)")
+			fmt.Println(h.owner, "LOST! (bust)")
 		case push:
-			fmt.Println(p.owner, "PUSH!")
+			fmt.Println(h.owner, "PUSH!")
 		case win:
-			fmt.Println(p.owner, "WON!")
+			fmt.Println(h.owner, "WON!")
 		case winbj:
-			fmt.Println(p.owner, "WON! (blackjack)")
+			fmt.Println(h.owner, "WON! (blackjack)")
 		case undecided:
 			panic("player winState shouldn't be undecided")
 		}

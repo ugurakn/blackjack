@@ -9,27 +9,6 @@ import (
 	"github.com/ugurakn/deck"
 )
 
-// type rValue struct {
-// 	r   deck.Rank
-// 	val int
-// }
-
-// var (
-// 	ace   = rValue{deck.Ace, 11}
-// 	two   = rValue{deck.Two, 2}
-// 	three = rValue{deck.Three, 3}
-// 	four  = rValue{deck.Four, 4}
-// 	five  = rValue{deck.Five, 5}
-// 	six   = rValue{deck.Six, 6}
-// 	seven = rValue{deck.Seven, 7}
-// 	eigth = rValue{deck.Eight, 8}
-// 	nine  = rValue{deck.Nine, 9}
-// 	ten   = rValue{deck.Ten, 10}
-// 	faceJ = rValue{deck.J, 10}
-// 	faceQ = rValue{deck.Q, 10}
-// 	faceK = rValue{deck.K, 10}
-// )
-
 // shoe represents the game deck
 // from which cards are dealt
 type shoe struct {
@@ -37,15 +16,13 @@ type shoe struct {
 	initSize int
 }
 
-type player int
+// type player int
 
-const (
-	dealer player = iota
-	player1
-	player2
-)
-
-//go:generate stringer -type=player
+// const (
+// 	dealer player = iota
+// 	player1
+// 	player2
+// )
 
 // deal pops one card off the top of d
 // and appends it to h.cards.
@@ -89,7 +66,7 @@ func playTurn(sh *shoe, p *hand) {
 		// get player input
 		fmt.Printf("(%v) (h)it or (s)tand: ", p.owner)
 		var in string
-		if p.human {
+		if p.owner.isHuman {
 			in = getInput()
 		} else {
 			in = getAIInput()

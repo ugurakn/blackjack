@@ -10,7 +10,8 @@ func Test_deal(t *testing.T) {
 	sh := new(shoe)
 	sh.cards = deck.New()
 	sh.initSize = len(sh.cards)
-	h := &hand{owner: player1, cards: make([]deck.Card, 0)}
+	p := &player{name: "player1", purse: 1000, isDealer: false, isHuman: true}
+	h := &hand{owner: p, cards: make([]deck.Card, 0)}
 
 	deal(sh, h)
 
@@ -34,11 +35,13 @@ func Test_initial_deal(t *testing.T) {
 	sh.cards = deck.New()
 	sh.initSize = len(sh.cards)
 
-	dh := newHand(dealer, true)
-	players := []*hand{newHand(player1, true), newHand(player2, true)}
+	dh := newHand(newDealer())
+	p1 := &player{name: "player1", purse: 1000, isDealer: false, isHuman: true}
+	p2 := &player{name: "player1", purse: 1000, isDealer: false, isHuman: true}
+	hands := []*hand{newHand(p1), newHand(p2)}
 
 	for i := 0; i < 2; i++ {
-		for _, p := range players {
+		for _, p := range hands {
 			deal(sh, p)
 		}
 		deal(sh, dh)
@@ -47,7 +50,7 @@ func Test_initial_deal(t *testing.T) {
 	if expectLen := sh.initSize - 6; len(sh.cards) != expectLen {
 		t.Errorf("expected deck length to be %v after dealing, got %v", expectLen, len(sh.cards))
 	}
-	for _, p := range append(players, dh) {
+	for _, p := range append(hands, dh) {
 		if len(p.cards) != 2 {
 			t.Errorf("expected the len of %v's cards to be 2, found %v", p.owner, len(p.cards))
 		}

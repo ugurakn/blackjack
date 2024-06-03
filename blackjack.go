@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -87,12 +86,17 @@ func checkBJ(h *hand) bool {
 
 // playTurn will let a player play his turn.
 func playTurn(sh *shoe, p *hand) {
+	firstTurn := true
 	var done bool
 	for !done {
 		fmt.Println(p)
 
 		// get player input
-		fmt.Printf("(%v) (h)it or (s)tand: ", p.owner)
+		if firstTurn {
+			fmt.Printf("(%v) (h)it, (d)ouble down or (s)tand: ", p.owner)
+		} else {
+			fmt.Printf("(%v) (h)it, (s)tand: ", p.owner)
+		}
 		var in string
 		if p.owner.isHuman {
 			in = getInput()
@@ -112,13 +116,31 @@ func playTurn(sh *shoe, p *hand) {
 				fmt.Printf("(%v) BUST!\n", p.owner)
 			}
 
+		case "d": // double-down
+			if !firstTurn {
+				fmt.Println("can't double-down now.")
+				continue
+			}
+			// double bet
+			p.bet *= 2
+			fmt.Printf("(%v) bet doubled (new bet: %v)\n", p.owner, p.bet)
+			// hit once, then stand
+			bust := hit(sh, p)
+			fmt.Printf("(%v) HIT: %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], p.value())
+			if bust {
+				fmt.Printf("(%v) BUST!\n", p.owner)
+			}
+			done = true
+
 		case "s": // stand
 			fmt.Printf("(%v) STAND\n", p.owner)
 			done = true
 
 		default:
-			fmt.Println("unknown input:", in)
-			os.Exit(1)
+			continue
+		}
+		if firstTurn {
+			firstTurn = false
 		}
 		time.Sleep(time.Millisecond * 500)
 	}

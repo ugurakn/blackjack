@@ -59,8 +59,7 @@ func main() {
 		if dealerbjack {
 			break
 		}
-
-		// skip this hand's turn if he has a bjack
+		// skip this hand's turn if hand has a bjack
 		if h.bjack {
 			continue
 		}

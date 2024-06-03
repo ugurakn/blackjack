@@ -22,6 +22,8 @@ type hand struct {
 	owner *player
 	cards []deck.Card
 	bjack bool
+	// amount bet on this hand by owner
+	bet int
 	winState
 }
 
@@ -105,5 +107,6 @@ func (h *hand) setWinState(dh *hand) {
 // newHand creates and returns
 // a new *hand of player p
 func newHand(p *player) *hand {
-	return &hand{owner: p, cards: make([]deck.Card, 0)}
+	// standard bet is 100
+	return &hand{owner: p, cards: make([]deck.Card, 0), bet: 100}
 }

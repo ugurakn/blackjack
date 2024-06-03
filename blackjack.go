@@ -45,6 +45,34 @@ func hit(sh *shoe, h *hand) bool {
 	return h.value() > 21
 }
 
+// if hand lost: owner loses the bet amount.
+// if push: nothing happens.
+// if won: the owner gains 1:1.
+// if won with bjack: owner gains 3:2.
+// NB bet amounts are not pulled out of player
+// purses on betting. A bet of 100 will net
+// a player +100 in their purse if they win.
+// returns the amount won/lost.
+func payout(h *hand) int {
+	ws := h.winState
+	if ws == lost || ws == bust {
+		h.owner.purse -= h.bet
+		if h.owner.purse < 0 {
+			panic("payout: player purse can't go below 0.")
+		}
+		return h.bet * -1
+	} else if ws == win {
+		h.owner.purse += h.bet
+		return h.bet
+	} else if ws == winbj {
+		amount := int(float32(h.bet) * 1.5)
+		h.owner.purse += amount
+		return amount
+	}
+	// push
+	return 0
+}
+
 // checkBJ is called for each player's and dealer's
 // hand to see whether it is a natural blackjack.
 // If it is, sets h.bjack to true

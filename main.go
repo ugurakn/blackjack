@@ -77,24 +77,27 @@ func main() {
 	fmt.Printf("dealer's cards value: %v\n", dHand.value())
 	time.Sleep(time.Millisecond * 750)
 
-	// determine and announce winner
+	// determine win/lose states and payouts for bets
+	// then display winState messages
 	for _, h := range hands {
 		h.setWinState(dHand)
-	}
-
-	// display winState messages
-	for _, h := range hands {
+		amount := payout(h)
 		switch h.winState {
 		case lost:
 			fmt.Println(h.owner, "LOST!")
+			fmt.Printf("%v purse: %v (%v)\n", h.owner, h.owner.purse, amount)
 		case bust:
 			fmt.Println(h.owner, "LOST! (bust)")
+			fmt.Printf("%v purse: %v (%v)\n", h.owner, h.owner.purse, amount)
 		case push:
 			fmt.Println(h.owner, "PUSH!")
+			fmt.Printf("%v purse: %v (%v)\n", h.owner, h.owner.purse, amount)
 		case win:
 			fmt.Println(h.owner, "WON!")
+			fmt.Printf("%v purse: %v (+%v)\n", h.owner, h.owner.purse, amount)
 		case winbj:
 			fmt.Println(h.owner, "WON! (blackjack)")
+			fmt.Printf("%v purse: %v (+%v)\n", h.owner, h.owner.purse, amount)
 		case undecided:
 			panic("player winState shouldn't be undecided")
 		}

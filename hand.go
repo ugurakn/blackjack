@@ -82,7 +82,6 @@ func (h *hand) setWinState(dh *hand) {
 		}
 		return
 	}
-
 	if h.bjack {
 		h.winState = winbj
 		return
@@ -95,6 +94,11 @@ func (h *hand) setWinState(dh *hand) {
 		h.winState = bust
 		return
 	}
+	if dhVal > 21 {
+		h.winState = win
+		return
+	}
+
 	if val < dhVal {
 		h.winState = lost
 	} else if val > dhVal {

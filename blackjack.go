@@ -107,7 +107,7 @@ func playTurn(sh *shoe, p *hand) {
 		case "h": // hit
 			bust := hit(sh, p)
 			val := p.value()
-			fmt.Printf("(%v) HIT: %v. new value:%v\n", p.owner, p.cards[len(p.cards)-1], val)
+			fmt.Printf("(%v) HIT: '%v' new value:%v\n", p.owner, p.cards[len(p.cards)-1], val)
 			if val == 21 { // auto-stand on 21
 				done = true
 			}
@@ -139,6 +139,7 @@ func playTurn(sh *shoe, p *hand) {
 		default:
 			continue
 		}
+
 		if firstTurn {
 			firstTurn = false
 		}
@@ -146,8 +147,27 @@ func playTurn(sh *shoe, p *hand) {
 	}
 }
 
+// dealer will hit on 16 or less,
+// stand on > 16
+func playDealer(sh *shoe, h *hand) {
+	var done bool
+	for !done {
+		if h.value() <= 16 {
+			bust := hit(sh, h)
+			fmt.Printf("(%v) HIT: '%v' new value:%v\n", h.owner, h.cards[len(h.cards)-1], h.value())
+			if bust {
+				done = true
+				fmt.Printf("(%v) BUST!\n", h.owner)
+			}
+		} else {
+			fmt.Printf("(%v) STAND\n", h.owner)
+			done = true
+		}
+		time.Sleep(time.Millisecond * 500)
+	}
+}
+
 // Get input from human player.
-// Valid choices: h, s
 func getInput() string {
 	var in string
 	fmt.Scanf("%s\n", &in)

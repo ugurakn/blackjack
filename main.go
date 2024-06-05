@@ -26,8 +26,8 @@ func main() {
 
 	// initial deal phase
 	for i := 0; i < initialDealSize; i++ {
-		for _, p := range hands {
-			deal(sh, p)
+		for _, h := range hands {
+			deal(sh, h)
 		}
 		deal(sh, dHand)
 	}
@@ -35,17 +35,14 @@ func main() {
 	// show dealt cards for each player
 	fmt.Println("All cards dealt...")
 	fmt.Println(dHand)
+
 	for _, h := range hands {
 		fmt.Println(h)
 	}
 	time.Sleep(1 * time.Second)
 
 	// check natural blackjacks
-	// if dealer has one, skip hands turn
-	dealerbjack := checkBJ(dHand)
-	if dealerbjack {
-		fmt.Println("dealer has a blackjack!")
-	}
+	// dealerbjack := checkBJ(dHand)
 
 	for _, h := range hands {
 		if checkBJ(h) {
@@ -55,10 +52,6 @@ func main() {
 
 	// each player plays until they stand or bust
 	for _, h := range hands {
-		// skip all players' turns if dealer has a bjack
-		if dealerbjack {
-			break
-		}
 		// skip this hand's turn if hand has a bjack
 		if h.bjack {
 			continue
@@ -68,16 +61,20 @@ func main() {
 		fmt.Println(dHand)
 		playTurn(sh, h)
 	}
-	fmt.Println("Game ended...")
+	fmt.Println("---All players have played, dealer's turn---")
 	time.Sleep(time.Millisecond * 500)
 
 	// show dealer's hidden card and total value
 	fmt.Printf("dealer's face-down card: '%v'\n", dHand.cards[0])
 	fmt.Printf("dealer's cards value: %v\n", dHand.value())
-	time.Sleep(time.Millisecond * 750)
+	time.Sleep(time.Second * 1)
+	// dealer's turn
+	playDealer(sh, dHand)
+	fmt.Println("---Game ended---")
+	time.Sleep(time.Second * 1)
 
 	// determine win/lose states and payouts for bets
-	// then display winState messages
+	// then display them
 	for _, h := range hands {
 		h.setWinState(dHand)
 		amount := payout(h)

@@ -16,14 +16,6 @@ type shoe struct {
 	initSize int
 }
 
-// type player int
-
-// const (
-// 	dealer player = iota
-// 	player1
-// 	player2
-// )
-
 // deal pops one card off the top of d
 // and appends it to h.cards.
 // Panics if len(d) == 0
@@ -164,6 +156,34 @@ func playDealer(sh *shoe, h *hand) {
 			done = true
 		}
 		time.Sleep(time.Millisecond * 500)
+	}
+}
+
+// determine win/lose states and payouts for bets
+// then display them
+func displayGameEnd(hands []*hand, dHand *hand) {
+	for _, h := range hands {
+		h.setWinState(dHand)
+		amount := payout(h)
+		switch h.winState {
+		case lost:
+			fmt.Println(h.owner, "LOST!")
+			fmt.Printf("%v purse: %v (%v)\n", h.owner, h.owner.purse, amount)
+		case bust:
+			fmt.Println(h.owner, "LOST! (bust)")
+			fmt.Printf("%v purse: %v (%v)\n", h.owner, h.owner.purse, amount)
+		case push:
+			fmt.Println(h.owner, "PUSH!")
+			fmt.Printf("%v purse: %v (%v)\n", h.owner, h.owner.purse, amount)
+		case win:
+			fmt.Println(h.owner, "WON!")
+			fmt.Printf("%v purse: %v (+%v)\n", h.owner, h.owner.purse, amount)
+		case winbj:
+			fmt.Println(h.owner, "WON! (blackjack)")
+			fmt.Printf("%v purse: %v (+%v)\n", h.owner, h.owner.purse, amount)
+		case undecided:
+			panic("player winState shouldn't be undecided")
+		}
 	}
 }
 

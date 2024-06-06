@@ -181,13 +181,30 @@ func getAIInput() string {
 }
 
 // create and return n players.
-func getPlayers(n int) []*player {
+func getPlayers(n int, names string) []*player {
 	players := make([]*player, n)
+	pNames := getNames(names, n)
 	for i := 0; i < n; i++ {
-		pName := "p" + strconv.Itoa(i+1)
-		players[i] = &player{name: pName, purse: initPurseSize, isHuman: true}
+		players[i] = &player{name: pNames[i], purse: initPurseSize, isHuman: true}
 	}
 	return players
+}
+
+// return n names for players. If not enough
+// names are provided, append generic ones.
+// extra names are ignored.
+func getNames(s string, n int) []string {
+	// s expected to be formatted as "name1,name2,name3" by user
+	s = strings.TrimRight(s, ",")
+	names := make([]string, 0)
+	if len(s) != 0 {
+		names = strings.Split(s, ",")
+	}
+	for len(names) < n {
+		name := "p" + strconv.Itoa(len(names)+1)
+		names = append(names, name)
+	}
+	return names
 }
 
 // create and return a hand for each player in players.

@@ -14,9 +14,12 @@ const initPurseSize = 1000
 func main() {
 	var numOfPlayers int
 	flag.IntVar(&numOfPlayers, "players", 2, "number of players")
+	var pNames string
+	flag.StringVar(&pNames, "names", "", "enter player names with commas (and no spaces) in between, e.g., name1,name2,name3")
+
 	flag.Parse()
 
-	players := getPlayers(numOfPlayers)
+	players := getPlayers(numOfPlayers, pNames)
 	hands := getHands(players)
 	dHand := newHand(newDealer())
 
@@ -73,7 +76,7 @@ func main() {
 		time.Sleep(time.Second * 1)
 		playDealer(sh, dHand)
 	}
-	// dealer's turn
+
 	fmt.Println("---Game ended---")
 	time.Sleep(time.Second * 1)
 

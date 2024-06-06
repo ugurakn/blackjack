@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,7 +26,6 @@ type shoe struct {
 
 // deal pops one card off the top of d
 // and appends it to h.cards.
-// Returns modified d.
 // Panics if len(d) == 0
 func deal(sh *shoe, h *hand) {
 	if len(sh.cards) == 0 {
@@ -178,4 +178,23 @@ func getInput() string {
 func getAIInput() string {
 	// TODO
 	return "AI"
+}
+
+// create and return n players.
+func getPlayers(n int) []*player {
+	players := make([]*player, n)
+	for i := 0; i < n; i++ {
+		pName := "p" + strconv.Itoa(i+1)
+		players[i] = &player{name: pName, purse: initPurseSize, isHuman: true}
+	}
+	return players
+}
+
+// create and return a hand for each player in players.
+func getHands(players []*player) []*hand {
+	hands := make([]*hand, len(players))
+	for i, p := range players {
+		hands[i] = newHand(p)
+	}
+	return hands
 }

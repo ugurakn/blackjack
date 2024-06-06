@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -11,18 +12,17 @@ const initialDealSize = 2
 const initPurseSize = 1000
 
 func main() {
+	var numOfPlayers int
+	flag.IntVar(&numOfPlayers, "players", 2, "number of players")
+	flag.Parse()
+
+	players := getPlayers(numOfPlayers)
+	hands := getHands(players)
+	dHand := newHand(newDealer())
+
 	sh := new(shoe)
 	sh.cards = deck.New(deck.Shuffle)
 	sh.initSize = len(sh.cards)
-
-	// create dealer & players
-	p1 := &player{name: "player1", purse: initPurseSize, isDealer: false, isHuman: true}
-	p2 := &player{name: "player2", purse: initPurseSize, isDealer: false, isHuman: true}
-
-	dHand := newHand(newDealer())
-
-	// represents players' hands
-	hands := []*hand{newHand(p1), newHand(p2)}
 
 	// initial deal phase
 	for i := 0; i < initialDealSize; i++ {
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// show dealt cards for each player
-	fmt.Println("All cards dealt...")
+	fmt.Println("---Cards dealt---")
 	fmt.Println(dHand)
 
 	for _, h := range hands {
@@ -42,8 +42,6 @@ func main() {
 	time.Sleep(1 * time.Second)
 
 	// check natural blackjacks
-	// dealerbjack := checkBJ(dHand)
-
 	for _, h := range hands {
 		if checkBJ(h) {
 			fmt.Println(h.owner, "has a blackjack!")
@@ -61,15 +59,21 @@ func main() {
 		fmt.Println(dHand)
 		playTurn(sh, h)
 	}
+
+	fmt.Println()
 	fmt.Println("---All players have played, dealer's turn---")
 	time.Sleep(time.Millisecond * 500)
 
 	// show dealer's hidden card and total value
 	fmt.Printf("dealer's face-down card: '%v'\n", dHand.cards[0])
-	fmt.Printf("dealer's cards value: %v\n", dHand.value())
-	time.Sleep(time.Second * 1)
+	if checkBJ(dHand) {
+		fmt.Println("dealer has a blackjack!")
+	} else {
+		fmt.Printf("dealer's cards value: %v\n", dHand.value())
+		time.Sleep(time.Second * 1)
+		playDealer(sh, dHand)
+	}
 	// dealer's turn
-	playDealer(sh, dHand)
 	fmt.Println("---Game ended---")
 	time.Sleep(time.Second * 1)
 

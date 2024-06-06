@@ -13,7 +13,23 @@ import (
 // from which cards are dealt
 type shoe struct {
 	cards    []deck.Card
+	decks    int
 	initSize int
+}
+
+func newShoe(decks int) *shoe {
+	if decks < 1 {
+		panic("decks should be at least 1.")
+	}
+	sh := new(shoe)
+	sh.cards = deck.New(deck.WithExtraDecks(decks-1), deck.Shuffle)
+	sh.decks = decks
+	sh.initSize = len(sh.cards)
+	return sh
+}
+
+func (sh *shoe) reshuffle() {
+	sh.cards = deck.New(deck.WithExtraDecks(sh.decks), deck.Shuffle)
 }
 
 // deal pops one card off the top of d

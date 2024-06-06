@@ -3,9 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 	"time"
-
-	"github.com/ugurakn/deck"
 )
 
 const initialDealSize = 2
@@ -16,71 +15,89 @@ func main() {
 	flag.IntVar(&numOfPlayers, "players", 2, "number of players")
 	var pNames string
 	flag.StringVar(&pNames, "names", "", "enter player names with commas (and no spaces) in between, e.g., name1,name2,name3")
+	var decks int
+	flag.IntVar(&decks, "decks", 2, "number of decks to use (min 1). The shoe will be auto-reshuffled when there are too few cards left.")
 
 	flag.Parse()
 
 	players := getPlayers(numOfPlayers, pNames)
-	hands := getHands(players)
-	dHand := newHand(newDealer())
+	sh := newShoe(decks)
 
-	sh := new(shoe)
-	sh.cards = deck.New(deck.Shuffle)
-	sh.initSize = len(sh.cards)
+	// main loop
+	for {
+		time.Sleep(time.Second * 1)
+		fmt.Println()
 
-	// initial deal phase
-	for i := 0; i < initialDealSize; i++ {
+		// reshuffle if too few cards remained
+		if len(sh.cards)*2 < sh.initSize {
+			sh.reshuffle()
+			fmt.Println("reshuffled the cards...")
+		}
+
+		hands := getHands(players)
+		dHand := newHand(newDealer())
+
+		// initial deal phase
+		for i := 0; i < initialDealSize; i++ {
+			for _, h := range hands {
+				deal(sh, h)
+			}
+			deal(sh, dHand)
+		}
+
+		// show dealt cards for each player
+		fmt.Println("---Cards dealt---")
+		fmt.Println(dHand)
+
 		for _, h := range hands {
-			deal(sh, h)
+			fmt.Println(h)
 		}
-		deal(sh, dHand)
-	}
+		time.Sleep(1 * time.Second)
 
-	// show dealt cards for each player
-	fmt.Println("---Cards dealt---")
-	fmt.Println(dHand)
-
-	for _, h := range hands {
-		fmt.Println(h)
-	}
-	time.Sleep(1 * time.Second)
-
-	// check natural blackjacks
-	for _, h := range hands {
-		if checkBJ(h) {
-			fmt.Println(h.owner, "has a blackjack!")
+		// check natural blackjacks
+		for _, h := range hands {
+			if checkBJ(h) {
+				fmt.Println(h.owner, "has a blackjack!")
+			}
 		}
-	}
 
-	// each player plays until they stand or bust
-	for _, h := range hands {
-		// skip this hand's turn if hand has a bjack
-		if h.bjack {
-			continue
+		// each player plays until they stand or bust
+		for _, h := range hands {
+			if h.bjack {
+				continue
+			}
+
+			fmt.Println()
+			fmt.Println(dHand)
+			playTurn(sh, h)
 		}
 
 		fmt.Println()
-		fmt.Println(dHand)
-		playTurn(sh, h)
-	}
+		fmt.Println("---All players have played, dealer's turn---")
+		time.Sleep(time.Millisecond * 500)
 
-	fmt.Println()
-	fmt.Println("---All players have played, dealer's turn---")
-	time.Sleep(time.Millisecond * 500)
+		// show dealer's hidden card and total value, dealer's turn
+		fmt.Printf("dealer's face-down card: '%v'\n", dHand.cards[0])
+		if checkBJ(dHand) {
+			fmt.Println("dealer has a blackjack!")
+		} else {
+			fmt.Printf("dealer's cards value: %v\n", dHand.value())
+			time.Sleep(time.Second * 1)
+			playDealer(sh, dHand)
+		}
 
-	// show dealer's hidden card and total value
-	fmt.Printf("dealer's face-down card: '%v'\n", dHand.cards[0])
-	if checkBJ(dHand) {
-		fmt.Println("dealer has a blackjack!")
-	} else {
-		fmt.Printf("dealer's cards value: %v\n", dHand.value())
+		fmt.Println("---Game ended---")
 		time.Sleep(time.Second * 1)
-		playDealer(sh, dHand)
+
+		// determine win/lose states and payouts for bets
+		// then display them
+		displayGameEnd(hands, dHand)
+
+		fmt.Println()
+		fmt.Print("(q)uit or continue: ")
+		quit := getInput()
+		if strings.ToLower(quit) == "q" {
+			break
+		}
 	}
-
-	fmt.Println("---Game ended---")
-	time.Sleep(time.Second * 1)
-
-	// determine win/lose states and payouts for bets
-	// then display them
-	displayGameEnd(hands, dHand)
 }

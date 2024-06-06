@@ -35,6 +35,10 @@ func main() {
 		}
 
 		hands := getHands(players)
+		if len(hands) == 0 {
+			fmt.Println("---No players left to play---")
+			break
+		}
 		dHand := newHand(newDealer())
 
 		// initial deal phase

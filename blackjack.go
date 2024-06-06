@@ -100,7 +100,7 @@ func playTurn(sh *shoe, p *hand) {
 		fmt.Println(p)
 
 		// get player input
-		if firstTurn {
+		if firstTurn && p.owner.purse >= p.bet*2 {
 			fmt.Printf("(%v) (h)it, (d)ouble down or (s)tand: ", p.owner)
 		} else {
 			fmt.Printf("(%v) (h)it, (s)tand: ", p.owner)
@@ -125,7 +125,7 @@ func playTurn(sh *shoe, p *hand) {
 			}
 
 		case "d": // double-down
-			if !firstTurn {
+			if !firstTurn || p.owner.purse < p.bet*2 {
 				fmt.Println("can't double-down now.")
 				continue
 			}
@@ -244,10 +244,13 @@ func getNames(s string, n int) []string {
 }
 
 // create and return a hand for each player in players.
+// players with 0 purse excluded.
 func getHands(players []*player) []*hand {
-	hands := make([]*hand, len(players))
-	for i, p := range players {
-		hands[i] = newHand(p)
+	hands := make([]*hand, 0)
+	for _, p := range players {
+		if p.purse > 0 {
+			hands = append(hands, newHand(p))
+		}
 	}
 	return hands
 }
